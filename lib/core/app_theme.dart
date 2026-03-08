@@ -39,7 +39,7 @@ class AppTheme {
   static final ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: seedColor,
+      seedColor: Colors.deepPurple,
       brightness: Brightness.dark,
       surface: const Color(0xFF1C1C1E),
     ),
