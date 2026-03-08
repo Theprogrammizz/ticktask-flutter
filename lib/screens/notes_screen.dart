@@ -107,7 +107,9 @@ class NotesScreen extends StatelessWidget {
                         childAspectRatio: 1,
                       ),
                       itemBuilder: (context, index) {
-                        return NoteTile();
+                        return NoteTile(
+                          boxColor: 0xFFFFFFFF,
+                        );
                       },
                     ),
                   ),
