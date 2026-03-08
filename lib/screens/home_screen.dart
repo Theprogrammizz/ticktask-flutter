@@ -29,13 +29,12 @@ class HomeScreen extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: GNav(
-              padding: EdgeInsetsGeometry.all(16),
+              padding: EdgeInsetsGeometry.all(13),
               gap: 8,
               backgroundColor: Theme.of(context).colorScheme.primary,
               color: Colors.white,
               activeColor: Colors.white,
-              tabBackgroundColor: Theme.of(context).colorScheme.secondary,
-              // tabBorder: Border.all(color: Colors.white, width: 1),
+              tabBorder: Border.all(color: Colors.white, width: 1),
               tabActiveBorder: Border.all(color: Colors.white, width: 1),
               iconSize: 20,
               selectedIndex: currentIndex,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticktask_flutter/core/app_theme.dart';
+import 'package:ticktask_flutter/screens/greet/onboarding_screen.dart';
 import 'package:ticktask_flutter/screens/home_screen.dart';
 
 void main() {
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
       home: HomeScreen(),
+      // home: OnboardingScreen(),
     );
   }
 }
