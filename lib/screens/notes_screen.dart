@@ -51,7 +51,7 @@ class NotesScreen extends ConsumerWidget {
                             final name = user?.name ?? "User";
 
                             return Text(
-                              "Hey, $name!",
+                              "Got an idea, $name?",
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 color: theme.colorScheme.surface,
                                 fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class NotesScreen extends ConsumerWidget {
                         const SizedBox(height: 4),
 
                         Text(
-                          "How is your day going?",
+                          "Capture it before it's gone.",
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.surface
                                 .withValues(alpha: 0.9),
