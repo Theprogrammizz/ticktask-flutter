@@ -14,6 +14,10 @@ class NoteTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bgColor = Color(note.colorValue);
+
+    final textColor =
+        bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
     return Hero(
       tag: note.id,
       child: Material(
@@ -59,7 +63,7 @@ class NoteTile extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Color(note.colorValue),
+                color: bgColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -78,9 +82,9 @@ class NoteTile extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: textColor),
                   ),
 
                   const SizedBox(height: 8),
@@ -90,9 +94,7 @@ class NoteTile extends ConsumerWidget {
                     note.body ?? "",
                     maxLines: 6,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(fontSize: 12, color: textColor),
                   ),
 
                   const SizedBox(height: 20),
@@ -105,7 +107,7 @@ class NoteTile extends ConsumerWidget {
                         DateFormat("MMM dd, yyyy").format(note.createdAt),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black54,
+                          color: textColor,
                         ),
                       ),
                       Container(

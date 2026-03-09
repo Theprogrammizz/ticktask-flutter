@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:ticktask_flutter/models/notes_model.dart';
+import 'package:ticktask_flutter/models/todo_model.dart';
 import 'package:ticktask_flutter/models/user_model.dart';
 
 class DatabaseServices {
@@ -43,7 +44,7 @@ class DatabaseServices {
     });
   }
 
-  // User Screens
+  //! User Methods
 
   Future<void> saveUserInfo(String userName) async {
     final user = User()
@@ -61,5 +62,43 @@ class DatabaseServices {
 
   Stream<User?> watchUser() {
     return db.users.watchObject(0, fireImmediately: true);
+  }
+
+  Future<void> toggleTheme() async {
+    final user = await db.users.get(0);
+
+    if (user == null) return;
+
+    user.darkMode = !user.darkMode;
+
+    await db.writeTxn(() async {
+      await db.users.put(user);
+    });
+  }
+
+  // ! Todo Methods
+
+  Future<void> addTodo(Todos todo) async {
+    await db.writeTxn(() async {
+      await db.todos.put(todo);
+    });
+  }
+
+  Future<void> toggleTodo(Todos todo) async {
+    todo.isDone = !todo.isDone;
+
+    await db.writeTxn(() async {
+      await db.todos.put(todo);
+    });
+  }
+
+  Future<void> delTodo(Id id) async {
+    await db.writeTxn(() async {
+      await db.todos.delete(id);
+    });
+  }
+
+  Stream<List<Todos>> watchTodo() {
+    return db.todos.where().sortByCreatedAt().watch(fireImmediately: true);
   }
 }

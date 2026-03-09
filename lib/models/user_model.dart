@@ -7,4 +7,6 @@ class User {
   Id id = 0;
 
   late String name;
+
+  bool darkMode = false;
 }

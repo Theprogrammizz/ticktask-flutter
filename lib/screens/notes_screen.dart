@@ -38,117 +38,165 @@ class NotesScreen extends ConsumerWidget {
 
             return ColoredBox(
               color: theme.colorScheme.primary,
-              child: Column(
-                children: [
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        userAsync.when(
-                          data: (user) {
-                            final name = user?.name ?? "User";
-
-                            return Text(
-                              "Got an idea, $name?",
-                              style: theme.textTheme.headlineMedium?.copyWith(
-                                color: theme.colorScheme.surface,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            );
-                          },
-                          loading: () => const SizedBox(),
-                          error: (_, __) => const SizedBox(),
-                        ),
-                        const SizedBox(height: 4),
-
-                        Text(
-                          "Capture it before it's gone.",
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.surface
-                                .withValues(alpha: 0.9),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Search Field
-                        TextField(
-                          onChanged: (value) {
-                            ref
-                                .read(searchQueryProvider.notifier)
-                                .searchQuery(value);
-                          },
-                          decoration: InputDecoration(
-                            hintText: "Search Notes",
-                            prefixIcon: const Icon(Icons.search),
-                            filled: true,
-                            fillColor: const Color(0xFFF2F2F2),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Content Sheet
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    // Header
+                    Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(28),
-                        ),
-                      ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Notes Header
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Notes",
-                                style: theme.textTheme.titleLarge?.copyWith(
+                          userAsync.when(
+                            data: (user) {
+                              final name = user?.name ?? "User";
+
+                              return Text(
+                                "Got an idea, $name?",
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  color: theme.colorScheme.surface,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
+                              );
+                            },
+                            loading: () => const SizedBox(),
+                            error: (_, __) => const SizedBox(),
+                          ),
+                          const SizedBox(height: 4),
 
-                              // Add button
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundColor: theme.colorScheme.primary,
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  icon: const Icon(Icons.add, size: 20),
-                                  color: Colors.white,
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => AddNoteScreen(),
-                                    ));
-                                  },
-                                ),
-                              ),
-                            ],
+                          Text(
+                            "Capture it before it's gone.",
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.surface
+                                  .withValues(alpha: 0.9),
+                            ),
                           ),
 
                           const SizedBox(height: 20),
 
-                          // Notes Grid
-                          Expanded(
-                            child: ListView(
+                          // Search Field
+                          TextField(
+                            onChanged: (value) {
+                              ref
+                                  .read(searchQueryProvider.notifier)
+                                  .searchQuery(value);
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Search Notes",
+                              prefixIcon: const Icon(Icons.search),
+                              filled: true,
+                              fillColor: Theme.of(context).colorScheme.surface,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Content Sheet
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(28),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            // Notes Header
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                if (pinnedNotes.isNotEmpty) ...[
+                                Text(
+                                  "Notes",
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                // Add button
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: theme.colorScheme.primary,
+                                  child: IconButton(
+                                    padding: EdgeInsets.zero,
+                                    icon: const Icon(Icons.add, size: 20),
+                                    color: Colors.white,
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => AddNoteScreen(),
+                                      ));
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Notes Grid
+                            Expanded(
+                              child: ListView(
+                                children: [
+                                  if (pinnedNotes.isNotEmpty) ...[
+                                    const Text(
+                                      "Pinned",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    MasonryGridView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: pinnedNotes.length,
+                                      gridDelegate:
+                                          const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                      ),
+                                      mainAxisSpacing: 14,
+                                      crossAxisSpacing: 14,
+                                      itemBuilder: (context, index) {
+                                        final note = pinnedNotes[index];
+
+                                        return Dismissible(
+                                          key: ValueKey(note.id),
+                                          direction:
+                                              DismissDirection.endToStart,
+                                          background: Container(
+                                            alignment: Alignment.centerRight,
+                                            padding: const EdgeInsets.only(
+                                                right: 20),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            child: const Icon(Icons.delete,
+                                                color: Colors.white),
+                                          ),
+                                          onDismissed: (_) {
+                                            ref
+                                                .read(databaseProvider)
+                                                .delNote(note.id);
+                                          },
+                                          child: NoteTile(note: note),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
                                   const Text(
-                                    "Pinned",
+                                    "Others",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
@@ -157,7 +205,7 @@ class NotesScreen extends ConsumerWidget {
                                     shrinkWrap: true,
                                     physics:
                                         const NeverScrollableScrollPhysics(),
-                                    itemCount: pinnedNotes.length,
+                                    itemCount: otherNotes.length,
                                     gridDelegate:
                                         const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
@@ -165,7 +213,7 @@ class NotesScreen extends ConsumerWidget {
                                     mainAxisSpacing: 14,
                                     crossAxisSpacing: 14,
                                     itemBuilder: (context, index) {
-                                      final note = pinnedNotes[index];
+                                      final note = otherNotes[index];
 
                                       return Dismissible(
                                         key: ValueKey(note.id),
@@ -191,58 +239,15 @@ class NotesScreen extends ConsumerWidget {
                                       );
                                     },
                                   ),
-                                  const SizedBox(height: 20),
                                 ],
-                                const Text(
-                                  "Others",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                MasonryGridView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: otherNotes.length,
-                                  gridDelegate:
-                                      const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                  ),
-                                  mainAxisSpacing: 14,
-                                  crossAxisSpacing: 14,
-                                  itemBuilder: (context, index) {
-                                    final note = otherNotes[index];
-
-                                    return Dismissible(
-                                      key: ValueKey(note.id),
-                                      direction: DismissDirection.endToStart,
-                                      background: Container(
-                                        alignment: Alignment.centerRight,
-                                        padding:
-                                            const EdgeInsets.only(right: 20),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                        ),
-                                        child: const Icon(Icons.delete,
-                                            color: Colors.white),
-                                      ),
-                                      onDismissed: (_) {
-                                        ref
-                                            .read(databaseProvider)
-                                            .delNote(note.id);
-                                      },
-                                      child: NoteTile(note: note),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

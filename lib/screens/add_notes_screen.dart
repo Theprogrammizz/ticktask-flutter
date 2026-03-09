@@ -15,7 +15,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
 
-  int selectedColor = 0xFFFFFFFF;
+  int selectedColor = 0;
 
   @override
   void initState() {
@@ -30,16 +30,30 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final noteColor =
+        selectedColor == 0 ? theme.colorScheme.surface : Color(selectedColor);
+
+    final textColor =
+        noteColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.note == null ? "New Note" : "Edit Note"),
-        backgroundColor: Color(selectedColor),
+        iconTheme: IconThemeData(
+          color: textColor, // Changes the back button or drawer icon color
+        ),
+        title: Text(
+          widget.note == null ? "New Note" : "Edit Note",
+          style: TextStyle(color: textColor),
+        ),
+        backgroundColor: noteColor,
         actions: [
           IconButton(
             onPressed: () async {
               final db = ref.read(databaseProvider);
 
-              if (titleController.text.isEmpty || bodyController.text.isEmpty) {
+              if (titleController.text.isEmpty && bodyController.text.isEmpty) {
                 return;
               }
 
@@ -63,12 +77,15 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
               // ignore: use_build_context_synchronously
               Navigator.pop(context);
             },
-            icon: Icon(Icons.check),
+            icon: Icon(
+              Icons.check,
+              color: textColor,
+            ),
           )
         ],
       ),
       body: ColoredBox(
-        color: Color(selectedColor),
+        color: noteColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -79,14 +96,14 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                   hintText: "Title",
                   border: InputBorder.none,
                 ),
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: textColor),
               ),
               // const SizedBox(height: 10),
               Divider(
-                color: Colors.black,
+                color: textColor,
                 thickness: 1.0,
               ),
               Expanded(
@@ -98,6 +115,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                     hintText: "Start writing...",
                     border: InputBorder.none,
                   ),
+                  style: TextStyle(color: textColor),
                 ),
               ),
               SizedBox(
@@ -106,6 +124,8 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                   scrollDirection: Axis.horizontal,
                   children: [
                     _colorItem(0xFFFFFFFF),
+                    _colorItem(0xFF2C2C2E),
+                    _colorItem(0xFF3A3A3C),
                     _colorItem(0xFFFFF59D),
                     _colorItem(0xFFFFAB91),
                     _colorItem(0xFFA5D6A7),
@@ -122,6 +142,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   }
 
   Widget _colorItem(int color) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -136,8 +157,8 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
           color: Color(color),
           shape: BoxShape.circle,
           border: selectedColor == color
-              ? Border.all(color: Colors.black, width: 3)
-              : Border.all(color: Colors.grey, width: 3),
+              ? Border.all(color: theme.colorScheme.primary, width: 3)
+              : Border.all(color: theme.colorScheme.outline, width: 2),
         ),
       ),
     );
