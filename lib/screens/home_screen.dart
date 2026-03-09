@@ -39,10 +39,12 @@ class HomeScreen extends ConsumerWidget {
                 padding: EdgeInsetsGeometry.all(13),
                 gap: 8,
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                color: Colors.white,
-                activeColor: Colors.white,
-                tabBorder: Border.all(color: Colors.white, width: 1),
-                tabActiveBorder: Border.all(color: Colors.white, width: 1),
+                color: Theme.of(context).colorScheme.surface,
+                activeColor: Theme.of(context).colorScheme.surface,
+                tabBorder: Border.all(
+                    color: Theme.of(context).colorScheme.surface, width: 1),
+                tabActiveBorder: Border.all(
+                    color: Theme.of(context).colorScheme.surface, width: 1),
                 iconSize: 20,
                 selectedIndex: currentIndex,
                 onTabChange: (index) {

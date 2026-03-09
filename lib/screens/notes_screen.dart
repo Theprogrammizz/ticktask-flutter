@@ -129,7 +129,8 @@ class NotesScreen extends ConsumerWidget {
                                   child: IconButton(
                                     padding: EdgeInsets.zero,
                                     icon: const Icon(Icons.add, size: 20),
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
                                     onPressed: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
