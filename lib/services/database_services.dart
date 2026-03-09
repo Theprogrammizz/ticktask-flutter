@@ -18,6 +18,12 @@ class DatabaseServices {
     });
   }
 
+  Future<void> updateNote(Notes note) async {
+    await db.writeTxn(() async {
+      await db.notes.put(note);
+    });
+  }
+
   Stream<List<Notes>> watchNotes() {
     return db.notes.where().watch(fireImmediately: true);
   }

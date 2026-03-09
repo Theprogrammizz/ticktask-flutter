@@ -1,70 +1,134 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:ticktask_flutter/models/notes_model.dart';
+import 'package:ticktask_flutter/providers/database_provider.dart';
+import 'package:ticktask_flutter/providers/notes_provider.dart';
+import 'package:ticktask_flutter/screens/add_notes_screen.dart';
 
-class NoteTile extends StatelessWidget {
-  final int boxColor;
-  const NoteTile({super.key, required this.boxColor});
+class NoteTile extends ConsumerWidget {
+  final Notes note;
+  const NoteTile({
+    super.key,
+    required this.note,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Color(boxColor),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // TITLE
-          const Text(
-            "Screenless Design",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // BODY
-          const Text(
-            "The beginning of screenless design. UI jobs to be taken over by Solution Architect. Voice interfaces and AI assistants will change the future of UI design.",
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 14,
-            ),
-          ),
-
-          const Spacer(),
-
-          // BOTTOM ROW
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "May 21, 2020",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Hero(
+      tag: note.id,
+      child: Material(
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 250),
+                pageBuilder: (_, animation, __) => AddNoteScreen(note: note),
+                transitionsBuilder: (_, animation, __, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
               ),
-              Container(
-                height: 30,
-                width: 30,
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
+            );
+          },
+          child: GestureDetector(
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text("Delete note?"),
+                  content: const Text("This action cannot be undone."),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ref.read(databaseProvider).delNote(note.id);
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Delete"),
+                    ),
+                  ],
                 ),
-                child: const Icon(
-                  Icons.edit,
-                  size: 16,
-                  color: Colors.white,
-                ),
-              )
-            ],
-          )
-        ],
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color(note.colorValue),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 6,
+                    color: Colors.black12,
+                    offset: Offset(0, 3),
+                  )
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // TITLE
+                  Text(
+                    note.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // BODY
+                  Text(
+                    note.body ?? "",
+                    maxLines: 6,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // BOTTOM ROW
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat("MMM dd, yyyy").format(note.createdAt),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      Container(
+                        height: 25,
+                        width: 25,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.notes,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
