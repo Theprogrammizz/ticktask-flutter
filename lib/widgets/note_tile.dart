@@ -109,18 +109,26 @@ class NoteTile extends ConsumerWidget {
                         ),
                       ),
                       Container(
-                        height: 25,
-                        width: 25,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notes,
-                          size: 14,
-                          color: Colors.white,
-                        ),
-                      )
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: IconButton(
+                              icon: Icon(
+                                size: 12,
+                                color: Colors.white,
+                                note.pinned
+                                    ? Icons.push_pin
+                                    : Icons.push_pin_outlined,
+                              ),
+                              onPressed: () {
+                                ref.read(databaseProvider).togglePinned(note);
+                              },
+                            ),
+                          ))
                     ],
                   )
                 ],

@@ -15,7 +15,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
 
-  int selectedColor = 0xFFFFFFF;
+  int selectedColor = 0xFFFFFFFF;
 
   @override
   void initState() {
@@ -64,7 +64,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
               Navigator.pop(context);
             },
             icon: Icon(Icons.check),
-            style: IconButton.styleFrom(),
           )
         ],
       ),
@@ -85,7 +84,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
+              // const SizedBox(height: 10),
               Divider(
                 color: Colors.black,
                 thickness: 1.0,

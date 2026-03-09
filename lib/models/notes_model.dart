@@ -16,5 +16,5 @@ class Notes {
   @Index()
   DateTime createdAt = DateTime.now();
 
-  DateTime? updatedAt;
+  bool pinned = false;
 }

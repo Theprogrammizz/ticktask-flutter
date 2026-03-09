@@ -32,15 +32,15 @@ const NotesSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'title': PropertySchema(
+    r'pinned': PropertySchema(
       id: 3,
+      name: r'pinned',
+      type: IsarType.bool,
+    ),
+    r'title': PropertySchema(
+      id: 4,
       name: r'title',
       type: IsarType.string,
-    ),
-    r'updatedAt': PropertySchema(
-      id: 4,
-      name: r'updatedAt',
-      type: IsarType.dateTime,
     )
   },
   estimateSize: _notesEstimateSize,
@@ -109,8 +109,8 @@ void _notesSerialize(
   writer.writeString(offsets[0], object.body);
   writer.writeLong(offsets[1], object.colorValue);
   writer.writeDateTime(offsets[2], object.createdAt);
-  writer.writeString(offsets[3], object.title);
-  writer.writeDateTime(offsets[4], object.updatedAt);
+  writer.writeBool(offsets[3], object.pinned);
+  writer.writeString(offsets[4], object.title);
 }
 
 Notes _notesDeserialize(
@@ -124,8 +124,8 @@ Notes _notesDeserialize(
   object.colorValue = reader.readLong(offsets[1]);
   object.createdAt = reader.readDateTime(offsets[2]);
   object.id = id;
-  object.title = reader.readString(offsets[3]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[4]);
+  object.pinned = reader.readBool(offsets[3]);
+  object.title = reader.readString(offsets[4]);
   return object;
 }
 
@@ -143,9 +143,9 @@ P _notesDeserializeProp<P>(
     case 2:
       return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -682,6 +682,15 @@ extension NotesQueryFilter on QueryBuilder<Notes, Notes, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> pinnedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'pinned',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -809,75 +818,6 @@ extension NotesQueryFilter on QueryBuilder<Notes, Notes, QFilterCondition> {
       ));
     });
   }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> updatedAtIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'updatedAt',
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> updatedAtIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'updatedAt',
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> updatedAtEqualTo(
-      DateTime? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'updatedAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> updatedAtGreaterThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'updatedAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> updatedAtLessThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'updatedAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> updatedAtBetween(
-    DateTime? lower,
-    DateTime? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'updatedAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
 }
 
 extension NotesQueryObject on QueryBuilder<Notes, Notes, QFilterCondition> {}
@@ -921,6 +861,18 @@ extension NotesQuerySortBy on QueryBuilder<Notes, Notes, QSortBy> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QAfterSortBy> sortByPinned() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinned', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterSortBy> sortByPinnedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinned', Sort.desc);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterSortBy> sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -930,18 +882,6 @@ extension NotesQuerySortBy on QueryBuilder<Notes, Notes, QSortBy> {
   QueryBuilder<Notes, Notes, QAfterSortBy> sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> sortByUpdatedAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updatedAt', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> sortByUpdatedAtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -995,6 +935,18 @@ extension NotesQuerySortThenBy on QueryBuilder<Notes, Notes, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QAfterSortBy> thenByPinned() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinned', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterSortBy> thenByPinnedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinned', Sort.desc);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterSortBy> thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -1004,18 +956,6 @@ extension NotesQuerySortThenBy on QueryBuilder<Notes, Notes, QSortThenBy> {
   QueryBuilder<Notes, Notes, QAfterSortBy> thenByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> thenByUpdatedAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updatedAt', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> thenByUpdatedAtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -1040,16 +980,16 @@ extension NotesQueryWhereDistinct on QueryBuilder<Notes, Notes, QDistinct> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QDistinct> distinctByPinned() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'pinned');
+    });
+  }
+
   QueryBuilder<Notes, Notes, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QDistinct> distinctByUpdatedAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'updatedAt');
     });
   }
 }
@@ -1079,15 +1019,15 @@ extension NotesQueryProperty on QueryBuilder<Notes, Notes, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Notes, String, QQueryOperations> titleProperty() {
+  QueryBuilder<Notes, bool, QQueryOperations> pinnedProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'title');
+      return query.addPropertyName(r'pinned');
     });
   }
 
-  QueryBuilder<Notes, DateTime?, QQueryOperations> updatedAtProperty() {
+  QueryBuilder<Notes, String, QQueryOperations> titleProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'updatedAt');
+      return query.addPropertyName(r'title');
     });
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ticktask_flutter/providers/navigation_provider.dart';
 import 'package:ticktask_flutter/screens/notes_screen.dart';
-import 'package:ticktask_flutter/screens/setting_screen.dart';
+import 'package:ticktask_flutter/screens/profile_screen.dart';
 import 'package:ticktask_flutter/screens/todo_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -16,7 +16,7 @@ class HomeScreen extends ConsumerWidget {
     final List<Widget> pages = [
       NotesScreen(key: ValueKey(0)),
       TodoScreen(key: ValueKey(1)),
-      SettingScreen(key: ValueKey(2)),
+      ProfileScreen(key: ValueKey(2)),
     ];
 
     return Scaffold(

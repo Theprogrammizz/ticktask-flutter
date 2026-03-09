@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ticktask_flutter/providers/database_provider.dart';
 import 'package:ticktask_flutter/providers/notes_provider.dart';
 import 'package:ticktask_flutter/providers/search_provider.dart';
+import 'package:ticktask_flutter/providers/user_provider.dart';
 import 'package:ticktask_flutter/screens/add_notes_screen.dart';
 import 'package:ticktask_flutter/widgets/note_tile.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -14,6 +15,7 @@ class NotesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final notesAsync = ref.watch(notesProvider);
+    final userAsync = ref.watch(userProvider);
     final query = ref.watch(searchQueryProvider);
 
     return GestureDetector(
@@ -22,12 +24,17 @@ class NotesScreen extends ConsumerWidget {
       },
       child: notesAsync.when(
           data: (notes) {
-            final filteredNotes = notes.where((note) {
-              final title = note.title.toLowerCase();
-              final body = note.body?.toLowerCase() ?? "";
+            final filteredNotes = query.isEmpty
+                ? notes
+                : notes.where((note) {
+                    final title = note.title.toLowerCase();
+                    final body = note.body?.toLowerCase() ?? "";
 
-              return title.contains(query) || body.contains(query);
-            }).toList();
+                    return title.contains(query) || body.contains(query);
+                  }).toList();
+
+            final pinnedNotes = filteredNotes.where((n) => n.pinned).toList();
+            final otherNotes = filteredNotes.where((n) => !n.pinned).toList();
 
             return ColoredBox(
               color: theme.colorScheme.primary,
@@ -39,12 +46,20 @@ class NotesScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Hey, John!",
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            color: theme.colorScheme.surface,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        userAsync.when(
+                          data: (user) {
+                            final name = user?.name ?? "User";
+
+                            return Text(
+                              "Hey, $name!",
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                color: theme.colorScheme.surface,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          },
+                          loading: () => const SizedBox(),
+                          error: (_, __) => const SizedBox(),
                         ),
                         const SizedBox(height: 4),
 
@@ -129,10 +144,20 @@ class NotesScreen extends ConsumerWidget {
 
                           // Notes Grid
                           Expanded(
-                            child: filteredNotes.isEmpty
-                                ? const Center(child: Text("No notes found"))
-                                : MasonryGridView.builder(
-                                    itemCount: filteredNotes.length,
+                            child: ListView(
+                              children: [
+                                if (pinnedNotes.isNotEmpty) ...[
+                                  const Text(
+                                    "Pinned",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  MasonryGridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: pinnedNotes.length,
                                     gridDelegate:
                                         const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
@@ -140,7 +165,7 @@ class NotesScreen extends ConsumerWidget {
                                     mainAxisSpacing: 14,
                                     crossAxisSpacing: 14,
                                     itemBuilder: (context, index) {
-                                      final note = filteredNotes[index];
+                                      final note = pinnedNotes[index];
 
                                       return Dismissible(
                                         key: ValueKey(note.id),
@@ -162,12 +187,56 @@ class NotesScreen extends ConsumerWidget {
                                               .read(databaseProvider)
                                               .delNote(note.id);
                                         },
-                                        child: NoteTile(
-                                          note: note,
-                                        ),
+                                        child: NoteTile(note: note),
                                       );
                                     },
                                   ),
+                                  const SizedBox(height: 20),
+                                ],
+                                const Text(
+                                  "Others",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 10),
+                                MasonryGridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: otherNotes.length,
+                                  gridDelegate:
+                                      const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                  ),
+                                  mainAxisSpacing: 14,
+                                  crossAxisSpacing: 14,
+                                  itemBuilder: (context, index) {
+                                    final note = otherNotes[index];
+
+                                    return Dismissible(
+                                      key: ValueKey(note.id),
+                                      direction: DismissDirection.endToStart,
+                                      background: Container(
+                                        alignment: Alignment.centerRight,
+                                        padding:
+                                            const EdgeInsets.only(right: 20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        child: const Icon(Icons.delete,
+                                            color: Colors.white),
+                                      ),
+                                      onDismissed: (_) {
+                                        ref
+                                            .read(databaseProvider)
+                                            .delNote(note.id);
+                                      },
+                                      child: NoteTile(note: note),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           )
                         ],
                       ),

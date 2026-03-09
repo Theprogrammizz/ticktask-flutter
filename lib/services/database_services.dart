@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:ticktask_flutter/models/notes_model.dart';
+import 'package:ticktask_flutter/models/user_model.dart';
 
 class DatabaseServices {
   final Isar db;
@@ -26,5 +27,39 @@ class DatabaseServices {
 
   Stream<List<Notes>> watchNotes() {
     return db.notes.where().watch(fireImmediately: true);
+  }
+
+  Future<void> clearAllNotes() async {
+    await db.writeTxn(() async {
+      await db.notes.clear();
+    });
+  }
+
+  Future<void> togglePinned(Notes note) async {
+    note.pinned = !note.pinned;
+
+    await db.writeTxn(() async {
+      await db.notes.put(note);
+    });
+  }
+
+  // User Screens
+
+  Future<void> saveUserInfo(String userName) async {
+    final user = User()
+      ..id = 0
+      ..name = userName;
+
+    await db.writeTxn(() async {
+      await db.users.put(user);
+    });
+  }
+
+  Future<User?> getUser() async {
+    return await db.users.get(0);
+  }
+
+  Stream<User?> watchUser() {
+    return db.users.watchObject(0, fireImmediately: true);
   }
 }
