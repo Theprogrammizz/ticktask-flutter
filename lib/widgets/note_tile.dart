@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ticktask_flutter/models/notes_model.dart';
 import 'package:ticktask_flutter/providers/database_provider.dart';
-import 'package:ticktask_flutter/providers/notes_provider.dart';
 import 'package:ticktask_flutter/screens/add_notes_screen.dart';
 
 class NoteTile extends ConsumerWidget {
