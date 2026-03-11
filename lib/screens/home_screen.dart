@@ -34,29 +34,32 @@ class HomeScreen extends ConsumerWidget {
         child: Container(
           color: Theme.of(context).colorScheme.primary,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(15.0),
             child: GNav(
-                padding: EdgeInsetsGeometry.all(13),
-                gap: 8,
+                padding: EdgeInsetsGeometry.all(16),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 color: Theme.of(context).colorScheme.surface,
-                activeColor: Theme.of(context).colorScheme.surface,
-                tabBorder: Border.all(
-                    color: Theme.of(context).colorScheme.surface, width: 1),
-                tabActiveBorder: Border.all(
-                    color: Theme.of(context).colorScheme.surface, width: 1),
+                activeColor: Theme.of(context).colorScheme.primary,
+                tabBackgroundColor: Theme.of(context).colorScheme.surface,
                 iconSize: 20,
                 selectedIndex: currentIndex,
                 onTabChange: (index) {
                   ref.read(navProvider.notifier).updateIndex(index);
                 },
+                tabBorderRadius: 12,
                 tabs: [
                   GButton(
                     icon: Icons.notes,
-                    text: "Notes",
+                    padding: EdgeInsets.all(10),
                   ),
-                  GButton(icon: Icons.check, text: "Todos"),
-                  GButton(icon: Icons.person, text: "Profile"),
+                  GButton(
+                    icon: Icons.check,
+                    padding: EdgeInsets.all(10),
+                  ),
+                  GButton(
+                    icon: Icons.person,
+                    padding: EdgeInsets.all(10),
+                  ),
                 ]),
           ),
         ),

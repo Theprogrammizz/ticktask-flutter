@@ -22,6 +22,7 @@ class NoteTile extends ConsumerWidget {
       tag: note.id,
       child: Material(
         child: InkWell(
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             Navigator.push(
               context,
